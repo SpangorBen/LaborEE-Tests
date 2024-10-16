@@ -1,0 +1,10 @@
+INSERT INTO Departments (name) VALUES ('HR'), ('Engineering');
+
+INSERT INTO JobTitles (title, description) VALUES ('Software Engineer', 'Develops software solutions'), ('HR Manager', 'Manages human resources');
+
+-- INSERT INTO Users (name, birthd_date, social_security_number, email, phone, hire_date, num_of_children, salary, role) VALUES ('Admin User', '1985-05-15', '111-11-1111', 'admin@example.com', '1234567890', '2020-01-01', 0, 100000, 'ADMIN'), ('Recruiter User', '1990-06-20', '222-22-2222', 'recruiter@example.com', '1234567891', '2021-06-01', 1, 80000, 'RECRUITER'), ('Employee One', '1995-07-30', '333-33-3333', 'employee1@example.com', '1234567892', '2022-03-15', 2, 60000, 'EMPLOYEE'), ('Employee Two', '1987-08-25', '444-44-4444', 'employee2@example.com', '1234567893', '2023-05-10', 0, 65000, 'EMPLOYEE');
+INSERT INTO Users (name, birthd_date, social_security_number, email, phone, hire_date, num_of_children, salary, street, city, postal_code, country, role, password, salt) VALUES ('Admin User', '1985-05-15', '111-11-1111', 'admin@admin.com', '1234567890', '2020-01-01', 0, 100000, '123 Admin St', 'Admin City', '12345', 'Admin Country', 'ADMIN', 'RV2dpBELjPcAAQxOFmQk9VL1wqO/MERaRfYOhADLrR0=', 'lBInTojJ+7u1EXPgO9XhdA=='), ('Recruiter User', '1990-06-20', '222-22-2222', 'recruiter@recruiter.com', '1234567891', '2021-06-01', 1, 80000, '456 Recruiter Ave', 'Recruiter City', '23456', 'Recruiter Country', 'RECRUITER', 'IqNqMiuQQx61tnHAMkbAdnSm8doSoL85yswUsU0NxRE=', 'IhSDJUKojFs0kO1R2AyrtQ=='), ('Employee One', '1995-07-30', '333-33-3333', 'employee@employee.com', '1234567892', '2022-03-15', 2, 60000, '789 Employee Rd', 'Employee City', '34567', 'Employee Country', 'EMPLOYEE', 'e7/mlonES5Os1QOzJqiu6cRX2/TO2oqICuaWNS+xpgU=', 'podeJkS5yZJsonLeLA5mnA=='), ('Employee Two', '1987-08-25', '444-44-4444', 'employee2@example.com', '1234567893', '2023-05-10', 0, 65000, '321 Employee St', 'Employee City', '45678', 'Employee Country', 'EMPLOYEE', 'password', 'salt');
+
+INSERT INTO Admins (Id) VALUES (1);
+INSERT INTO Recruiters (Id) VALUES (2);
+INSERT INTO Employees (Id, departmentId, jobTitleId) VALUES (3, 1, 1), (4, 2, 2);

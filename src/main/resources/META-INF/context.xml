@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Realm className="com.labor.laboreev2.security.DataSourceRealm"
+           driverName="org.postgresql.Driver"
+           connectionURL="jdbc:postgresql://localhost:5432/laborV2"
+           connectionName="labor"
+           connectionPassword="password"
+           userTable="users"
+           userNameCol="email"
+           userCredCol="password"
+           userRoleTable="users"
+           roleNameCol="role"
+    />
+</Context>
