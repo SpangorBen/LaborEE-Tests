@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RecruiterServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.services</a> &gt; <span class="el_source">RecruiterServiceImpl.java</span></div><h1>RecruiterServiceImpl.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.services;
+
+import com.labor.laboreev2.models.*;
+import com.labor.laboreev2.models.enums.ApplicationStatus;
+import com.labor.laboreev2.repositories.interfaces.ApplicationRepository;
+import com.labor.laboreev2.repositories.interfaces.EmployeeRepository;
+import com.labor.laboreev2.repositories.interfaces.JobOfferRepository;
+import com.labor.laboreev2.repositories.interfaces.RecruiterRepository;
+import com.labor.laboreev2.services.interfaces.RecruiterService;
+import jakarta.transaction.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+public class RecruiterServiceImpl implements RecruiterService {
+
+<span class="fc" id="L20">    private final Logger logger = Logger.getLogger(RecruiterServiceImpl.class.getName());</span>
+
+    private final JobOfferRepository jobOfferRepository;
+    private final ApplicationRepository applicationRepository;
+    private final RecruiterRepository recruiterRepository;
+
+<span class="fc" id="L26">    public RecruiterServiceImpl(JobOfferRepository jobOfferRepository, ApplicationRepository applicationRepository, RecruiterRepository recruiterRepository) {</span>
+<span class="fc" id="L27">        this.jobOfferRepository = jobOfferRepository;</span>
+<span class="fc" id="L28">        this.applicationRepository = applicationRepository;</span>
+<span class="fc" id="L29">        this.recruiterRepository = recruiterRepository;</span>
+<span class="fc" id="L30">    }</span>
+
+    @Override
+    @Transactional
+    public JobOffer createJobOffer(JobOffer jobOffer) {
+        try {
+<span class="fc" id="L36">            return jobOfferRepository.save(jobOffer);</span>
+<span class="nc" id="L37">        } catch (Exception e) {</span>
+<span class="nc" id="L38">            logger.severe(&quot;Failed to create job offer: &quot; + e.getMessage());</span>
+<span class="nc" id="L39">            throw new RuntimeException(&quot;Failed to create job offer&quot;, e);</span>
+        }
+    }
+
+    @Override
+    @Transactional
+    public JobOffer updateJobOffer(JobOffer jobOffer) {
+        try {
+<span class="fc" id="L47">            return jobOfferRepository.save(jobOffer);</span>
+<span class="nc" id="L48">        } catch (Exception e) {</span>
+<span class="nc" id="L49">            logger.severe(&quot;Failed to update job offer: &quot; + e.getMessage());</span>
+<span class="nc" id="L50">            throw new RuntimeException(&quot;Failed to update job offer&quot;, e);</span>
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteJobOffer(Long jobOfferId) {
+        try {
+<span class="fc" id="L58">            jobOfferRepository.deleteById(jobOfferId);</span>
+<span class="nc" id="L59">        } catch (Exception e) {</span>
+<span class="nc" id="L60">            logger.severe(&quot;Failed to delete job offer: &quot; + e.getMessage());</span>
+<span class="nc" id="L61">            throw new RuntimeException(&quot;Failed to delete job offer&quot;, e);</span>
+<span class="fc" id="L62">        }</span>
+<span class="fc" id="L63">    }</span>
+
+    @Override
+    public JobOffer getJobOfferById(Long jobOfferId) {
+        try {
+<span class="pc" id="L68">            return jobOfferRepository.findById(jobOfferId).orElseThrow(() -&gt; new RuntimeException(&quot;Job offer not found&quot;));</span>
+<span class="nc" id="L69">        } catch (Exception e) {</span>
+<span class="nc" id="L70">            logger.severe(&quot;Failed to find job offer by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L71">            throw new RuntimeException(&quot;Failed to find job offer by id&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;JobOffer&gt; getJobOffers() {
+        try {
+<span class="fc" id="L78">            return jobOfferRepository.findAll();</span>
+<span class="nc" id="L79">        } catch (Exception e) {</span>
+<span class="nc" id="L80">            logger.severe(&quot;Failed to get job offers: &quot; + e.getMessage());</span>
+<span class="nc" id="L81">            throw new RuntimeException(&quot;Failed to get job offers&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public Recruiter getRecruiterById(Long recruiterId) {
+        try {
+<span class="fc" id="L88">            return recruiterRepository.findById(recruiterId);</span>
+<span class="nc" id="L89">        } catch (Exception e) {</span>
+<span class="nc" id="L90">            logger.severe(&quot;Failed to find recruiter by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L91">            throw new RuntimeException(&quot;Failed to find recruiter by id&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Application&gt; getApplicationsForJobOffer(Long jobOfferId) {
+        try {
+<span class="fc" id="L98">            return applicationRepository.findByJobOffer(jobOfferId);</span>
+<span class="nc" id="L99">        } catch (Exception e) {</span>
+<span class="nc" id="L100">            logger.severe(&quot;Failed to get applications for job offer: &quot; + e.getMessage());</span>
+<span class="nc" id="L101">            throw new RuntimeException(&quot;Failed to get applications for job offer&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public Application getApplicationById(Long applicationId) {
+        try {
+<span class="pc" id="L108">            return applicationRepository.findById(applicationId).orElseThrow(() -&gt; new RuntimeException(&quot;Application not found&quot;));</span>
+<span class="nc" id="L109">        } catch (Exception e) {</span>
+<span class="nc" id="L110">            logger.severe(&quot;Failed to find application by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L111">            throw new RuntimeException(&quot;Failed to find application by id&quot;, e);</span>
+        }
+    }
+
+    @Override
+    @Transactional
+    public Application updateApplicationStatus(Long applicationId, ApplicationStatus newStatus) {
+        try {
+<span class="fc" id="L119">            Application application = getApplicationById(applicationId);</span>
+<span class="fc" id="L120">            application.setStatus(newStatus);</span>
+<span class="fc" id="L121">            return applicationRepository.save(application);</span>
+<span class="nc" id="L122">        } catch (Exception e) {</span>
+<span class="nc" id="L123">            logger.severe(&quot;Failed to update application status: &quot; + e.getMessage());</span>
+<span class="nc" id="L124">            throw new RuntimeException(&quot;Failed to update application status&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Application&gt; filterApplicationsByStatus(ApplicationStatus status) {
+        try {
+<span class="fc" id="L131">            return applicationRepository.findByStatus(status);</span>
+<span class="nc" id="L132">        } catch (Exception e) {</span>
+<span class="nc" id="L133">            logger.severe(&quot;Failed to filter applications by status: &quot; + e.getMessage());</span>
+<span class="nc" id="L134">            throw new RuntimeException(&quot;Failed to filter applications by status&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Application&gt; filterApplicationsBySkill(String skill) {
+        try {
+<span class="fc" id="L141">            return applicationRepository.findBySkill(skill);</span>
+<span class="nc" id="L142">        } catch (Exception e) {</span>
+<span class="nc" id="L143">            logger.severe(&quot;Failed to filter applications by skill: &quot; + e.getMessage());</span>
+<span class="nc" id="L144">            throw new RuntimeException(&quot;Failed to filter applications by skill&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public Map&lt;LocalDate, BigDecimal&gt; getMonthlyFamilyAllowanceTotals() {
+<span class="nc" id="L150">        return Map.of();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

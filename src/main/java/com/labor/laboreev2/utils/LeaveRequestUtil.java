@@ -9,7 +9,7 @@ import java.util.List;
 
 public class LeaveRequestUtil {
 
-    public static int calculateUsedLeaveDays(Employee employee, int year, LeaveRequestRepository leaveRequestRepository) {
+    public int calculateUsedLeaveDays(Employee employee, int year, LeaveRequestRepository leaveRequestRepository) {
         List<LeaveRequest> approvedLeaveRequests = leaveRequestRepository.findByUserAndStatus(employee, LeaveRequestStatus.APPROVED);
         int usedLeaveDays = 0;
         for (LeaveRequest requests : approvedLeaveRequests) {

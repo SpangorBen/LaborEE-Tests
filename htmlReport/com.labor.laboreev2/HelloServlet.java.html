@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HelloServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2</a> &gt; <span class="el_source">HelloServlet.java</span></div><h1>HelloServlet.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2;
+
+import java.io.*;
+import java.time.LocalDate;
+import java.util.Base64;
+import java.util.logging.Logger;
+
+import com.labor.laboreev2.models.*;
+import com.labor.laboreev2.models.enums.ApplicationStatus;
+import com.labor.laboreev2.models.enums.JobOfferStatus;
+import com.labor.laboreev2.models.enums.LeaveRequestStatus;
+import com.labor.laboreev2.repositories.EmployeeRepositoryImpl;
+import com.labor.laboreev2.repositories.JobOfferRepositoryImpl;
+import com.labor.laboreev2.repositories.interfaces.EmployeeRepository;
+import com.labor.laboreev2.repositories.interfaces.JobOfferRepository;
+import com.labor.laboreev2.services.AdminServiceImpl;
+import com.labor.laboreev2.services.interfaces.AdminService;
+import com.labor.laboreev2.utils.PasswordUtil;
+import jakarta.persistence.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
+
+@WebServlet(name = &quot;helloServlet&quot;, value = &quot;/hello-servlet&quot;)
+<span class="nc" id="L24">public class HelloServlet extends HttpServlet {</span>
+    private String message;
+<span class="nc" id="L26">    private final Logger logger = Logger.getLogger(HelloServlet.class.getName());</span>
+
+    public void init() {
+//        try {
+//            EntityManagerFactory emf = Persistence.createEntityManagerFactory(&quot;labor&quot;);
+//            EntityManager em = emf.createEntityManager();
+//            EntityTransaction transaction = em.getTransaction();
+//            transaction.begin();
+//
+//            EmployeeRepository employeeRepository = new EmployeeRepositoryImpl(em);
+//            AdminService adminService = new AdminServiceImpl(null, employeeRepository);
+//            JobOfferRepository jobOfferRepository = new JobOfferRepositoryImpl(em);
+//            LocalDate date = LocalDate.of(2000, 12, 12);
+//            Address address = new Address(&quot;Budapest&quot;, &quot;1111&quot;, &quot;Kossuth Lajos utca 1.&quot;, &quot;Hungary&quot;);
+//
+//            Long id = 3L;
+//            Employee emplowyee = employeeRepository.findById(id).get();
+//            LeaveRequest leaveRequest = new LeaveRequest(
+//                    emplowyee,
+//                    date,
+//                    date.plusDays(5),
+//                    &quot;Sickness leave&quot;,
+//                    LeaveRequestStatus.PENDING
+//            );
+//            em.persist(leaveRequest);
+//
+////            Department department = new Department(&quot;IT&quot;);
+////            em.persist(department);
+////            JobTitle jobTitle = new JobTitle(&quot;Dev&quot;, &quot;Developer&quot;);
+////            em.persist(jobTitle);
+////            transaction.commit();
+////            Employee employee = new Employee(&quot; Mine&quot;, date, &quot;1234567o00k89&quot;,&quot;t2t@test.com&quot;, &quot;45678&quot;, date, 0, 2300.0, address, department, jobTitle);
+////            adminService.createEmployee(employee);
+////            Recruiter recruiter = new Recruiter(&quot;John Doe&quot;, date, &quot;123456789&quot;, &quot;test@test.com&quot;, &quot;&quot;, date, 0, address);
+////            Department department = em.find(Department.class, 1);
+////            JobTitle jobTitle = em.find(JobTitle.class, 1);
+////            Recruiter recruiter = em.find(Recruiter.class, 1);
+////            String title = &quot;Software Developer&quot;;
+////            String description = &quot;We are looking for an experienced software developer to join our team.&quot;;
+////            JobOfferStatus status = JobOfferStatus.OPEN;
+////            LocalDate publicationDate = LocalDate.now();
+////            Integer validityDurationDays = 30;
+////            JobOffer jobOffer = new JobOffer(title, description, department, jobTitle, status, publicationDate, validityDurationDays, recruiter);
+////            jobOfferRepository.save(jobOffer);
+////            JobOffer jobOffer = em.find(JobOffer.class, 1);
+////            Application application = new Application(
+////                    jobOffer,
+////                    &quot;John Doe&quot;, // Applicant's name.
+////                    &quot;john.doe@example.com&quot;, // Applicant's email.
+////                    LocalDate.now(), // Application date.
+////                    &quot;https://example.com/resume.pdf&quot;, // Resume URL.
+////                    &quot;I am excited to apply for this role.&quot;, // Cover letter.
+////                    ApplicationStatus.SUBMITTED, // Example status.
+////                    &quot;Java, Spring, Hibernate&quot; // Skills.
+////            );
+////
+////            em.persist(application);
+//
+//            em.close();
+//            emf.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+<span class="nc" id="L89">        message = &quot;Hello World!&quot;;</span>
+<span class="nc" id="L90">        String password = &quot;adminadmin&quot;;</span>
+<span class="nc" id="L91">        byte[] salt = PasswordUtil.generateSalt();</span>
+<span class="nc" id="L92">        String hashedPassword = PasswordUtil.hashPassword(password, salt);</span>
+<span class="nc" id="L93">        logger.info(&quot;Password: &quot; + hashedPassword);</span>
+<span class="nc" id="L94">        logger.info(&quot;Salt: &quot; + Base64.getEncoder().encodeToString(salt));</span>
+
+<span class="nc" id="L96">        String password2 = &quot;recruiter&quot;;</span>
+<span class="nc" id="L97">        byte[] salt2 = PasswordUtil.generateSalt(); // New salt for each password</span>
+<span class="nc" id="L98">        String hashedPassword2 = PasswordUtil.hashPassword(password2, salt2);</span>
+<span class="nc" id="L99">        logger.info(&quot;Password Rec: &quot; + hashedPassword2);</span>
+<span class="nc" id="L100">        logger.info(&quot;Salt: &quot; + Base64.getEncoder().encodeToString(salt2));</span>
+
+<span class="nc" id="L102">        String password3 = &quot;employee&quot;;</span>
+<span class="nc" id="L103">        byte[] salt3 = PasswordUtil.generateSalt(); // New salt for each password</span>
+<span class="nc" id="L104">        String hashedPassword3 = PasswordUtil.hashPassword(password3, salt3);</span>
+<span class="nc" id="L105">        logger.info(&quot;Password Emp: &quot; + hashedPassword3);</span>
+<span class="nc" id="L106">        logger.info(&quot;Salt: &quot; + Base64.getEncoder().encodeToString(salt3));</span>
+
+<span class="nc" id="L108">    }</span>
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+<span class="nc" id="L111">        response.setContentType(&quot;text/html&quot;);</span>
+
+        // Hello
+<span class="nc" id="L114">        PrintWriter out = response.getWriter();</span>
+<span class="nc" id="L115">        out.println(&quot;&lt;html&gt;&lt;body&gt;&quot;);</span>
+<span class="nc" id="L116">        out.println(&quot;&lt;h1&gt;&quot; + message + &quot;&lt;/h1&gt;&quot;);</span>
+<span class="nc" id="L117">        out.println(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);</span>
+<span class="nc" id="L118">    }</span>
+
+    public void destroy() {
+<span class="nc" id="L121">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

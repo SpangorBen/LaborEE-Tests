@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RecruiterServiceImplTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.services</a> &gt; <span class="el_source">RecruiterServiceImplTest.java</span></div><h1>RecruiterServiceImplTest.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.services;
+
+import com.labor.laboreev2.models.*;
+import com.labor.laboreev2.models.enums.ApplicationStatus;
+import com.labor.laboreev2.repositories.interfaces.ApplicationRepository;
+import com.labor.laboreev2.repositories.interfaces.JobOfferRepository;
+import com.labor.laboreev2.repositories.interfaces.RecruiterRepository;
+import com.labor.laboreev2.services.interfaces.RecruiterService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+<span class="fc" id="L27">class RecruiterServiceImplTest {</span>
+
+    @Mock
+    private JobOfferRepository jobOfferRepository;
+    @Mock
+    private ApplicationRepository applicationRepository;
+    @Mock
+    private RecruiterRepository recruiterRepository;
+
+    @InjectMocks
+    private RecruiterServiceImpl recruiterService;
+
+    private JobOffer jobOffer;
+    private Application application;
+    private Recruiter recruiter;
+
+    @BeforeEach
+    void setUp() {
+<span class="fc" id="L45">        jobOffer = new JobOffer();</span>
+<span class="fc" id="L46">        jobOffer.setJobOfferId(1L);</span>
+<span class="fc" id="L47">        jobOffer.setTitle(&quot;Software Engineer&quot;);</span>
+
+<span class="fc" id="L49">        application = new Application();</span>
+<span class="fc" id="L50">        application.setApplicationId(1L);</span>
+<span class="fc" id="L51">        application.setJobOffer(jobOffer);</span>
+<span class="fc" id="L52">        application.setStatus(ApplicationStatus.SUBMITTED);</span>
+
+<span class="fc" id="L54">        recruiter = new Recruiter();</span>
+<span class="fc" id="L55">        recruiter.setId(1L);</span>
+<span class="fc" id="L56">        recruiter.setName(&quot;John Doe&quot;);</span>
+<span class="fc" id="L57">    }</span>
+
+    @Test
+    void createJobOffer_shouldReturnSavedJobOffer() {
+<span class="fc" id="L61">        when(jobOfferRepository.save(any(JobOffer.class))).thenReturn(jobOffer);</span>
+
+<span class="fc" id="L63">        JobOffer savedJobOffer = recruiterService.createJobOffer(jobOffer);</span>
+
+<span class="fc" id="L65">        assertNotNull(savedJobOffer);</span>
+<span class="fc" id="L66">        assertEquals(jobOffer.getJobOfferId(), savedJobOffer.getJobOfferId());</span>
+<span class="fc" id="L67">        verify(jobOfferRepository, times(1)).save(jobOffer);</span>
+<span class="fc" id="L68">    }</span>
+
+    @Test
+    void updateJobOffer_shouldReturnUpdatedJobOffer() {
+<span class="fc" id="L72">        when(jobOfferRepository.save(any(JobOffer.class))).thenReturn(jobOffer);</span>
+
+<span class="fc" id="L74">        JobOffer updatedJobOffer = recruiterService.updateJobOffer(jobOffer);</span>
+
+<span class="fc" id="L76">        assertNotNull(updatedJobOffer);</span>
+<span class="fc" id="L77">        assertEquals(jobOffer.getJobOfferId(), updatedJobOffer.getJobOfferId());</span>
+<span class="fc" id="L78">        verify(jobOfferRepository, times(1)).save(jobOffer);</span>
+<span class="fc" id="L79">    }</span>
+
+    @Test
+    void deleteJobOffer_shouldCallRepositoryDeleteById() {
+<span class="fc" id="L83">        doNothing().when(jobOfferRepository).deleteById(jobOffer.getJobOfferId());</span>
+
+<span class="fc" id="L85">        recruiterService.deleteJobOffer(jobOffer.getJobOfferId());</span>
+
+<span class="fc" id="L87">        verify(jobOfferRepository, times(1)).deleteById(jobOffer.getJobOfferId());</span>
+<span class="fc" id="L88">    }</span>
+
+    @Test
+    void getJobOfferById_shouldReturnJobOffer() {
+<span class="fc" id="L92">        when(jobOfferRepository.findById(jobOffer.getJobOfferId())).thenReturn(Optional.of(jobOffer));</span>
+
+<span class="fc" id="L94">        JobOffer foundJobOffer = recruiterService.getJobOfferById(jobOffer.getJobOfferId());</span>
+
+<span class="fc" id="L96">        assertNotNull(foundJobOffer);</span>
+<span class="fc" id="L97">        assertEquals(jobOffer.getJobOfferId(), foundJobOffer.getJobOfferId());</span>
+<span class="fc" id="L98">        verify(jobOfferRepository, times(1)).findById(jobOffer.getJobOfferId());</span>
+<span class="fc" id="L99">    }</span>
+
+    @Test
+    void getJobOffers_shouldReturnListOfJobOffers() {
+<span class="fc" id="L103">        when(jobOfferRepository.findAll()).thenReturn(List.of(jobOffer));</span>
+
+<span class="fc" id="L105">        List&lt;JobOffer&gt; jobOffers = recruiterService.getJobOffers();</span>
+
+<span class="fc" id="L107">        assertNotNull(jobOffers);</span>
+<span class="fc" id="L108">        assertEquals(1, jobOffers.size());</span>
+<span class="fc" id="L109">        assertEquals(jobOffer.getJobOfferId(), jobOffers.get(0).getJobOfferId());</span>
+<span class="fc" id="L110">        verify(jobOfferRepository, times(1)).findAll();</span>
+<span class="fc" id="L111">    }</span>
+
+    @Test
+    void getRecruiterById_shouldReturnRecruiter() {
+<span class="fc" id="L115">        when(recruiterRepository.findById(recruiter.getId())).thenReturn(recruiter);</span>
+
+<span class="fc" id="L117">        Recruiter foundRecruiter = recruiterService.getRecruiterById(recruiter.getId());</span>
+
+<span class="fc" id="L119">        assertNotNull(foundRecruiter);</span>
+<span class="fc" id="L120">        assertEquals(recruiter.getId(), foundRecruiter.getId());</span>
+<span class="fc" id="L121">        verify(recruiterRepository, times(1)).findById(recruiter.getId());</span>
+<span class="fc" id="L122">    }</span>
+
+    @Test
+    void updateApplicationStatus_shouldReturnUpdatedApplication() {
+<span class="fc" id="L126">        when(applicationRepository.findById(application.getApplicationId())).thenReturn(Optional.of(application));</span>
+<span class="fc" id="L127">        when(applicationRepository.save(any(Application.class))).thenReturn(application);</span>
+
+<span class="fc" id="L129">        Application updatedApplication = recruiterService.updateApplicationStatus(application.getApplicationId(), ApplicationStatus.ACCEPTED);</span>
+
+<span class="fc" id="L131">        assertNotNull(updatedApplication);</span>
+<span class="fc" id="L132">        assertEquals(ApplicationStatus.ACCEPTED, updatedApplication.getStatus());</span>
+<span class="fc" id="L133">        verify(applicationRepository, times(1)).save(application);</span>
+<span class="fc" id="L134">    }</span>
+
+    @Test
+    void getApplicationsForJobOffer_shouldReturnListOfApplications() {
+<span class="fc" id="L138">        when(applicationRepository.findByJobOffer(jobOffer.getJobOfferId())).thenReturn(List.of(application));</span>
+
+<span class="fc" id="L140">        List&lt;Application&gt; applications = recruiterService.getApplicationsForJobOffer(jobOffer.getJobOfferId());</span>
+
+<span class="fc" id="L142">        assertNotNull(applications);</span>
+<span class="fc" id="L143">        assertEquals(1, applications.size());</span>
+<span class="fc" id="L144">        assertEquals(application.getApplicationId(), applications.get(0).getApplicationId());</span>
+<span class="fc" id="L145">        verify(applicationRepository, times(1)).findByJobOffer(jobOffer.getJobOfferId());</span>
+<span class="fc" id="L146">    }</span>
+
+    @Test
+    void getApplicationById_shouldReturnApplication() {
+<span class="fc" id="L150">        when(applicationRepository.findById(application.getApplicationId())).thenReturn(Optional.of(application));</span>
+
+<span class="fc" id="L152">        Application foundApplication = recruiterService.getApplicationById(application.getApplicationId());</span>
+
+<span class="fc" id="L154">        assertNotNull(foundApplication);</span>
+<span class="fc" id="L155">        assertEquals(application.getApplicationId(), foundApplication.getApplicationId());</span>
+<span class="fc" id="L156">        verify(applicationRepository, times(1)).findById(application.getApplicationId());</span>
+<span class="fc" id="L157">    }</span>
+
+    @Test
+    void filterApplicationsByStatus_shouldReturnFilteredApplications() {
+<span class="fc" id="L161">        when(applicationRepository.findByStatus(ApplicationStatus.SUBMITTED)).thenReturn(List.of(application));</span>
+
+<span class="fc" id="L163">        List&lt;Application&gt; applications = recruiterService.filterApplicationsByStatus(ApplicationStatus.SUBMITTED);</span>
+
+<span class="fc" id="L165">        assertNotNull(applications);</span>
+<span class="fc" id="L166">        assertEquals(1, applications.size());</span>
+<span class="fc" id="L167">        assertEquals(application.getApplicationId(), applications.get(0).getApplicationId());</span>
+<span class="fc" id="L168">        verify(applicationRepository, times(1)).findByStatus(ApplicationStatus.SUBMITTED);</span>
+<span class="fc" id="L169">    }</span>
+
+    @Test
+    void filterApplicationsBySkill_shouldReturnFilteredApplications() {
+<span class="fc" id="L173">        String skill = &quot;Java&quot;;</span>
+<span class="fc" id="L174">        when(applicationRepository.findBySkill(skill)).thenReturn(List.of(application));</span>
+
+<span class="fc" id="L176">        List&lt;Application&gt; applications = recruiterService.filterApplicationsBySkill(skill);</span>
+
+<span class="fc" id="L178">        assertNotNull(applications);</span>
+<span class="fc" id="L179">        assertEquals(1, applications.size());</span>
+<span class="fc" id="L180">        assertEquals(application.getApplicationId(), applications.get(0).getApplicationId());</span>
+<span class="fc" id="L181">        verify(applicationRepository, times(1)).findBySkill(skill);</span>
+<span class="fc" id="L182">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

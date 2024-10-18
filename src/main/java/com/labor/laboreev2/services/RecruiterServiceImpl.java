@@ -145,8 +145,4 @@ public class RecruiterServiceImpl implements RecruiterService {
         }
     }
 
-    @Override
-    public Map<LocalDate, BigDecimal> getMonthlyFamilyAllowanceTotals() {
-        return Map.of();
-    }
 }

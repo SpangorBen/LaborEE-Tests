@@ -9,7 +9,9 @@ import com.labor.laboreev2.services.RecruiterServiceImpl;
 import com.labor.laboreev2.services.interfaces.AdminService;
 import com.labor.laboreev2.services.interfaces.EmployeeService;
 import com.labor.laboreev2.services.interfaces.RecruiterService;
+import com.labor.laboreev2.utils.FamilyAllowance;
 import com.labor.laboreev2.utils.JPAUtil;
+import com.labor.laboreev2.utils.LeaveRequestUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.servlet.ServletContextEvent;
@@ -36,11 +38,13 @@ public class AppListener implements ServletContextListener {
         PayRollRepository payRollRepository = new PayRollRepositoryImpl(em);
         RecruiterRepository recruiterRepository = new RecruiterRepositoryImpl(em);
         UserRepository userRepository = new UserRepositoryImpl(em);
+        LeaveRequestUtil leaveRequestUtil = new LeaveRequestUtil();
+        FamilyAllowance familyAllowance = new FamilyAllowance();
 
         CustomJDBCRealm.setUserRepository(userRepository);
 
-        AdminService adminService = new AdminServiceImpl(leaveRequestRepository, employeeRepository);
-        EmployeeService employeeService = new EmployeeServiceImpl(leaveRequestRepository, employeeRepository);
+        AdminService adminService = new AdminServiceImpl(leaveRequestRepository, employeeRepository, leaveRequestUtil);
+        EmployeeService employeeService = new EmployeeServiceImpl(leaveRequestRepository, employeeRepository, leaveRequestUtil, familyAllowance);
         RecruiterService recruiterService = new RecruiterServiceImpl(jobOfferRepository, applicationRepository, recruiterRepository);
 
         sce.getServletContext().setAttribute("applicationRepository", applicationRepository);

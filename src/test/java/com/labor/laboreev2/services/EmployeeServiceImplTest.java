@@ -26,6 +26,12 @@ import static org.mockito.Mockito.*;
 class EmployeeServiceImplTest {
 
     @Mock
+    private LeaveRequestUtil leaveRequestUtil;
+
+    @Mock
+    private FamilyAllowance familyAllowance;
+
+    @Mock
     private LeaveRequestRepository leaveRequestRepository;
 
     @Mock
@@ -33,9 +39,6 @@ class EmployeeServiceImplTest {
 
     @InjectMocks
     private EmployeeServiceImpl employeeService;
-
-    @Mock
-    private LeaveRequestUtil leaveRequestUtil;
 
     private Employee employee;
     private LeaveRequest leaveRequest;
@@ -93,10 +96,13 @@ class EmployeeServiceImplTest {
 
     @Test
     void testSubmitLeaveRequest_NotEnoughDays() {
+        leaveRequest.setStartDate(LocalDate.now());
+        leaveRequest.setEndDate(LocalDate.now().plusDays(5));
+
         when(employeeRepository.findById(any(Long.class))).thenReturn(Optional.of(employee));
         when(leaveRequestRepository.findByUserAndStatus(any(Employee.class), eq(LeaveRequestStatus.APPROVED)))
                 .thenReturn(List.of());
-        when(LeaveRequestUtil.calculateUsedLeaveDays(any(Employee.class), anyInt(), any(LeaveRequestRepository.class)))
+        when(leaveRequestUtil.calculateUsedLeaveDays(any(Employee.class), anyInt(), any(LeaveRequestRepository.class)))
                 .thenReturn(18);
 
         Exception exception = assertThrows(RuntimeException.class, () ->
@@ -131,7 +137,7 @@ class EmployeeServiceImplTest {
     @Test
     void testCalculateFamilyAllowance_Success() {
         when(employeeRepository.findById(any(Long.class))).thenReturn(Optional.of(employee));
-        when(FamilyAllowance.calculateFamilyAllowance(any(Employee.class))).thenReturn(100.0);
+        when(familyAllowance.calculateFamilyAllowance(any(Employee.class))).thenReturn(100.0);
 
         double allowance = employeeService.calculateFamilyAllowance(1L);
 
@@ -162,9 +168,8 @@ class EmployeeServiceImplTest {
     void testGetById_Failure() {
         when(employeeRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () ->
-                employeeService.getById(1L));
+        Optional<Employee> result = employeeService.getById(1L);
 
-        assertEquals("Failed to find employee by id", exception.getMessage());
+        assertFalse(result.isPresent(), "Employee should not be found, expected an empty Optional.");
     }
 }

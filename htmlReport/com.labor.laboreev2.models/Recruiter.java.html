@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Recruiter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.models</a> &gt; <span class="el_source">Recruiter.java</span></div><h1>Recruiter.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.models;
+
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = &quot;Recruiters&quot;)
+@DiscriminatorValue(&quot;RECRUITER&quot;)
+public class Recruiter extends User{
+
+<span class="fc" id="L14">    public Recruiter() {</span>
+<span class="fc" id="L15">    }</span>
+
+    public Recruiter(String name, LocalDate birthDate, String socialSecurityNumber, String email, String password, String salt, String phone, LocalDate hireDate, Integer numOfChildren, Double salary , Address address) {
+<span class="nc" id="L18">        super(name, birthDate, socialSecurityNumber, email, password, salt, phone, hireDate, numOfChildren, salary, address);</span>
+<span class="nc" id="L19">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L23">        return</span>
+<span class="nc" id="L24">                super.toString() +</span>
+                &quot;Recruiter{}&quot;;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

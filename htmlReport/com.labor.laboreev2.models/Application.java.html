@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Application.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.models</a> &gt; <span class="el_source">Application.java</span></div><h1>Application.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.models;
+
+import com.labor.laboreev2.models.enums.ApplicationStatus;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = &quot;Applications&quot;)
+public class Application {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;application_id&quot;)
+    private Long applicationId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;job_offer_id&quot;, nullable = false)
+    private JobOffer jobOffer;
+
+    @Column(name = &quot;applicant&quot;, nullable = false)
+    private String applicant;
+
+    @Column(name = &quot;email&quot;, nullable = false)
+    private String email;
+
+    @Column(name = &quot;application_date&quot;, nullable = false)
+    private LocalDate applicationDate;
+
+    @Column(name = &quot;resume_url&quot;, nullable = false)
+    private String resumeUrl;
+
+    @Column(name = &quot;cover_letter&quot;)
+    private String coverLetter;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = &quot;status&quot;, nullable = false)
+    private ApplicationStatus status;
+
+    @Column(name = &quot;skills&quot;)
+    private String skills;
+
+<span class="fc" id="L43">    public Application() {</span>
+<span class="fc" id="L44">    }</span>
+
+<span class="nc" id="L46">    public Application(JobOffer jobOffer, String applicant, String email, LocalDate applicationDate, String resumeUrl, String coverLetter, ApplicationStatus status, String skills) {</span>
+<span class="nc" id="L47">        this.jobOffer = jobOffer;</span>
+<span class="nc" id="L48">        this.applicant = applicant;</span>
+<span class="nc" id="L49">        this.email = email;</span>
+<span class="nc" id="L50">        this.applicationDate = applicationDate;</span>
+<span class="nc" id="L51">        this.resumeUrl = resumeUrl;</span>
+<span class="nc" id="L52">        this.coverLetter = coverLetter;</span>
+<span class="nc" id="L53">        this.status = status;</span>
+<span class="nc" id="L54">        this.skills = skills;</span>
+<span class="nc" id="L55">    }</span>
+
+    public Long getApplicationId() {
+<span class="fc" id="L58">        return applicationId;</span>
+    }
+
+    public void setApplicationId(Long applicationId) {
+<span class="fc" id="L62">        this.applicationId = applicationId;</span>
+<span class="fc" id="L63">    }</span>
+
+    public JobOffer getJobOffer() {
+<span class="nc" id="L66">        return jobOffer;</span>
+    }
+
+    public void setJobOffer(JobOffer jobOffer) {
+<span class="fc" id="L70">        this.jobOffer = jobOffer;</span>
+<span class="fc" id="L71">    }</span>
+
+    public String getApplicant() {
+<span class="nc" id="L74">        return applicant;</span>
+    }
+
+    public void setApplicant(String applicant) {
+<span class="nc" id="L78">        this.applicant = applicant;</span>
+<span class="nc" id="L79">    }</span>
+
+    public String getEmail() {
+<span class="nc" id="L82">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="nc" id="L86">        this.email = email;</span>
+<span class="nc" id="L87">    }</span>
+
+    public LocalDate getApplicationDate() {
+<span class="nc" id="L90">        return applicationDate;</span>
+    }
+
+    public void setApplicationDate(LocalDate applicationDate) {
+<span class="nc" id="L94">        this.applicationDate = applicationDate;</span>
+<span class="nc" id="L95">    }</span>
+
+    public String getResumeUrl() {
+<span class="nc" id="L98">        return resumeUrl;</span>
+    }
+
+    public void setResumeUrl(String resumeUrl) {
+<span class="nc" id="L102">        this.resumeUrl = resumeUrl;</span>
+<span class="nc" id="L103">    }</span>
+
+    public String getCoverLetter() {
+<span class="nc" id="L106">        return coverLetter;</span>
+    }
+
+    public void setCoverLetter(String coverLetter) {
+<span class="nc" id="L110">        this.coverLetter = coverLetter;</span>
+<span class="nc" id="L111">    }</span>
+
+    public ApplicationStatus getStatus() {
+<span class="fc" id="L114">        return status;</span>
+    }
+
+    public void setStatus(ApplicationStatus status) {
+<span class="fc" id="L118">        this.status = status;</span>
+<span class="fc" id="L119">    }</span>
+
+    public String getSkills() {
+<span class="nc" id="L122">        return skills;</span>
+    }
+
+    public void setSkills(String skills) {
+<span class="nc" id="L126">        this.skills = skills;</span>
+<span class="nc" id="L127">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

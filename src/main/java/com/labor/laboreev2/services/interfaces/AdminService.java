@@ -18,8 +18,4 @@ public interface AdminService {
     Employee updateEmployee(Employee employee);
     void deleteEmployee(Long employeeId);
     Employee getEmployeeById(Long employeeId);
-    List<Employee> getAllEmployees();
-
-//    Map<LocalDate, BigDecimal> getMonthlyFamilyAllowanceTotals();
-    Map<LeaveRequestStatus, Long> getMonthlyLeaveRequestCounts(LocalDate month);
 }

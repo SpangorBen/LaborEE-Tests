@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LeaveRequestRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.repositories</a> &gt; <span class="el_source">LeaveRequestRepositoryImpl.java</span></div><h1>LeaveRequestRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.repositories;
+
+import com.labor.laboreev2.models.Employee;
+import com.labor.laboreev2.models.LeaveRequest;
+import com.labor.laboreev2.models.User;
+import com.labor.laboreev2.models.enums.LeaveRequestStatus;
+import com.labor.laboreev2.repositories.interfaces.LeaveRequestRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
+
+public class LeaveRequestRepositoryImpl implements LeaveRequestRepository {
+
+<span class="nc" id="L18">    private final Logger logger = Logger.getLogger(LeaveRequestRepositoryImpl.class.getName());</span>
+    private final EntityManager em;
+
+<span class="nc" id="L21">    public LeaveRequestRepositoryImpl(EntityManager em) {</span>
+<span class="nc" id="L22">        this.em = em;</span>
+<span class="nc" id="L23">    }</span>
+
+    @Override
+    public LeaveRequest save(LeaveRequest leaveRequest) {
+        try {
+<span class="nc" id="L28">            EntityTransaction transaction = em.getTransaction();</span>
+<span class="nc" id="L29">            transaction.begin();</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">            if (leaveRequest.getLeaveRequestId() == null) {</span>
+<span class="nc" id="L31">                em.persist(leaveRequest);</span>
+            } else {
+<span class="nc" id="L33">                em.merge(leaveRequest);</span>
+            }
+<span class="nc" id="L35">            transaction.commit();</span>
+<span class="nc" id="L36">            return leaveRequest;</span>
+<span class="nc" id="L37">        } catch (Exception e) {</span>
+<span class="nc" id="L38">            logger.severe(&quot;Error saving leave request: &quot; + e.getMessage());</span>
+<span class="nc" id="L39">            throw new RuntimeException(&quot;Error saving leave request&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public Optional&lt;LeaveRequest&gt; findById(Long id) {
+        try {
+<span class="nc" id="L46">            LeaveRequest leaveRequest = em.find(LeaveRequest.class, id);</span>
+<span class="nc" id="L47">            return Optional.ofNullable(leaveRequest);</span>
+<span class="nc" id="L48">        } catch (Exception e) {</span>
+<span class="nc" id="L49">            logger.severe(&quot;Error finding leave request by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L50">            throw new RuntimeException(&quot;Error finding leave request by id&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;LeaveRequest&gt; findAll() {
+        try {
+<span class="nc" id="L57">            return em.createQuery(&quot;SELECT lr FROM LeaveRequest lr&quot;, LeaveRequest.class).getResultList();</span>
+<span class="nc" id="L58">        } catch (Exception e) {</span>
+<span class="nc" id="L59">            logger.severe(&quot;Error finding all leave requests: &quot; + e.getMessage());</span>
+<span class="nc" id="L60">            throw new RuntimeException(&quot;Error finding all leave requests&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;LeaveRequest&gt; findPendingLeaveRequests() {
+        try {
+<span class="nc" id="L67">            return em.createQuery(&quot;SELECT lr FROM LeaveRequest lr WHERE lr.status = :status&quot;, LeaveRequest.class)</span>
+<span class="nc" id="L68">                    .setParameter(&quot;status&quot;, LeaveRequestStatus.PENDING)</span>
+<span class="nc" id="L69">                    .getResultList();</span>
+<span class="nc" id="L70">        } catch (Exception e) {</span>
+<span class="nc" id="L71">            logger.severe(&quot;Error finding pending leave requests: &quot; + e.getMessage());</span>
+<span class="nc" id="L72">            throw new RuntimeException(&quot;Error finding pending leave requests&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public void deleteById(Long id) {
+<span class="nc" id="L78">        EntityTransaction transaction = em.getTransaction();</span>
+        try {
+<span class="nc" id="L80">            transaction.begin();</span>
+<span class="nc" id="L81">            Optional&lt;LeaveRequest&gt; leaveRequest = findById(id);</span>
+<span class="nc" id="L82">            leaveRequest.ifPresent(em::remove);</span>
+<span class="nc" id="L83">            transaction.commit();</span>
+<span class="nc" id="L84">        } catch (Exception e) {</span>
+<span class="nc" id="L85">            logger.severe(&quot;Error deleting leave request by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L86">            throw new RuntimeException(&quot;Error deleting leave request by id&quot;, e);</span>
+<span class="nc" id="L87">        }</span>
+<span class="nc" id="L88">    }</span>
+
+    @Override
+    public List&lt;LeaveRequest&gt; findByStatus(LeaveRequestStatus status) {
+        try {
+<span class="nc" id="L93">            return em.createQuery(&quot;SELECT lr FROM LeaveRequest lr WHERE lr.status = :status&quot;, LeaveRequest.class)</span>
+<span class="nc" id="L94">                    .setParameter(&quot;status&quot;, status)</span>
+<span class="nc" id="L95">                    .getResultList();</span>
+<span class="nc" id="L96">        } catch (Exception e) {</span>
+<span class="nc" id="L97">            logger.severe(&quot;Error finding leave requests by status: &quot; + e.getMessage());</span>
+<span class="nc" id="L98">            throw new RuntimeException(&quot;Error finding leave requests by status&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;LeaveRequest&gt; findByMonth(LocalDate month) {
+        try {
+<span class="nc" id="L105">            LocalDate startOfMonth = month.withDayOfMonth(1);</span>
+<span class="nc" id="L106">            LocalDate endOfMonth = month.withDayOfMonth(month.lengthOfMonth());</span>
+
+<span class="nc" id="L108">            return em.createQuery(&quot;SELECT lr FROM LeaveRequest lr WHERE lr.startDate BETWEEN :startOfMonth AND :endOfMonth&quot;, LeaveRequest.class)</span>
+<span class="nc" id="L109">                    .setParameter(&quot;startOfMonth&quot;, startOfMonth)</span>
+<span class="nc" id="L110">                    .setParameter(&quot;endOfMonth&quot;, endOfMonth)</span>
+<span class="nc" id="L111">                    .getResultList();</span>
+<span class="nc" id="L112">        } catch (Exception ex) {</span>
+<span class="nc" id="L113">            logger.severe(&quot;Error finding leave requests by month: &quot; + ex.getMessage());</span>
+<span class="nc" id="L114">            throw new RuntimeException(&quot;Error finding leave requests by month&quot;, ex);</span>
+        }
+    }
+
+    @Override
+    public List&lt;LeaveRequest&gt; findByUserAndStatus(Employee employee, LeaveRequestStatus status) {
+        try {
+<span class="nc" id="L121">            return em.createQuery(&quot;SELECT lr FROM LeaveRequest lr WHERE lr.user = :employee AND lr.status = :status&quot;, LeaveRequest.class)</span>
+<span class="nc" id="L122">                    .setParameter(&quot;employee&quot;, employee)</span>
+<span class="nc" id="L123">                    .setParameter(&quot;status&quot;, status)</span>
+<span class="nc" id="L124">                    .getResultList();</span>
+<span class="nc" id="L125">        } catch (Exception ex) {</span>
+            // Handle the exception
+<span class="nc" id="L127">            throw new RuntimeException(&quot;Error finding leave requests by user and status&quot;, ex);</span>
+        }
+    }
+
+    @Override
+    public List&lt;LeaveRequest&gt; findByUser(User user) {
+        try {
+<span class="nc" id="L134">            return em.createQuery(&quot;SELECT lr FROM LeaveRequest lr WHERE lr.user = :user&quot;, LeaveRequest.class)</span>
+<span class="nc" id="L135">                    .setParameter(&quot;user&quot;, user)</span>
+<span class="nc" id="L136">                    .getResultList();</span>
+<span class="nc" id="L137">        } catch (Exception ex) {</span>
+<span class="nc" id="L138">            logger.severe(&quot;Error finding leave requests for user: &quot; + ex.getMessage());</span>
+<span class="nc" id="L139">            throw new RuntimeException(&quot;Error finding leave requests for user&quot;, ex);</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

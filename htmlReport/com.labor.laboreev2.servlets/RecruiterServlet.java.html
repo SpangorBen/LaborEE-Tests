@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RecruiterServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.servlets</a> &gt; <span class="el_source">RecruiterServlet.java</span></div><h1>RecruiterServlet.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.servlets;
+
+import com.labor.laboreev2.models.*;
+import com.labor.laboreev2.models.enums.ApplicationStatus;
+import com.labor.laboreev2.models.enums.JobOfferStatus;
+import com.labor.laboreev2.repositories.interfaces.DepartmentRepository;
+import com.labor.laboreev2.repositories.interfaces.JobOfferRepository;
+import com.labor.laboreev2.repositories.interfaces.JobTitleRepository;
+import com.labor.laboreev2.services.interfaces.RecruiterService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+@WebServlet(&quot;/recruiter/*&quot;)
+<span class="nc" id="L25">public class RecruiterServlet extends HttpServlet {</span>
+
+<span class="nc" id="L27">    private final Logger logger = Logger.getLogger(RecruiterServlet.class.getName());</span>
+
+    private RecruiterService recruiterService;
+    private DepartmentRepository departmentRepository;
+    private JobTitleRepository jobTitleRepository;
+
+    @Override
+    public void init() throws ServletException {
+<span class="nc" id="L35">        super.init();</span>
+
+<span class="nc" id="L37">        recruiterService = (RecruiterService) getServletContext().getAttribute(&quot;recruiterService&quot;);</span>
+<span class="nc" id="L38">        departmentRepository = (DepartmentRepository) getServletContext().getAttribute(&quot;departmentRepository&quot;);</span>
+<span class="nc" id="L39">        jobTitleRepository = (JobTitleRepository) getServletContext().getAttribute(&quot;jobTitleRepository&quot;);</span>
+<span class="nc" id="L40">    }</span>
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+<span class="nc" id="L45">        String action = request.getPathInfo();</span>
+<span class="nc" id="L46">        logger.severe(&quot;action: &quot; + action);</span>
+
+<span class="nc bnc" id="L48" title="All 4 branches missed.">        switch (action) {</span>
+            case &quot;/dashboard&quot;:
+<span class="nc" id="L50">                showDashboard(request, response);</span>
+<span class="nc" id="L51">                break;</span>
+            case &quot;/createJobOffer&quot;:
+<span class="nc" id="L53">                showCreateJobOffre(request, response);</span>
+<span class="nc" id="L54">                break;</span>
+            case &quot;/deleteJobOffer&quot;:
+<span class="nc" id="L56">                deleteJobOffer(request, response);</span>
+<span class="nc" id="L57">                break;</span>
+            default:
+<span class="nc" id="L59">                showDashboard(request, response);</span>
+                break;
+        }
+
+<span class="nc" id="L63">    }</span>
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+<span class="nc" id="L68">            String action = request.getPathInfo();</span>
+<span class="nc" id="L69">            logger.severe(&quot;action: &quot; + action);</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            switch (action) {</span>
+                case &quot;/createJobOffer&quot;:
+<span class="nc" id="L73">                    createJobOffer(request, response);</span>
+<span class="nc" id="L74">                    break;</span>
+                default:
+<span class="nc" id="L76">                    showDashboard(request, response);</span>
+                    break;
+            }
+<span class="nc" id="L79">    }</span>
+
+    private void createJobOffer(HttpServletRequest request, HttpServletResponse response) {
+        try {
+<span class="nc" id="L83">            String title = request.getParameter(&quot;title&quot;);</span>
+<span class="nc" id="L84">            String description = request.getParameter(&quot;description&quot;);</span>
+<span class="nc" id="L85">            Long departmentId = Long.parseLong(request.getParameter(&quot;departmentId&quot;));</span>
+<span class="nc" id="L86">            Long jobTitleId = Long.parseLong(request.getParameter(&quot;jobTitleId&quot;));</span>
+<span class="nc" id="L87">            JobOfferStatus status = JobOfferStatus.valueOf(request.getParameter(&quot;status&quot;));</span>
+<span class="nc" id="L88">            LocalDate publicationDate = LocalDate.parse(request.getParameter(&quot;publicationDate&quot;));</span>
+<span class="nc" id="L89">            Integer validityDurationDays = Integer.parseInt(request.getParameter(&quot;validityDurationDays&quot;));</span>
+
+<span class="nc" id="L91">            Department department = departmentRepository.findById(departmentId)</span>
+<span class="nc" id="L92">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Department not found&quot;));</span>
+<span class="nc" id="L93">            JobTitle jobTitle = jobTitleRepository.findById(jobTitleId)</span>
+<span class="nc" id="L94">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Job Title not found&quot;));</span>
+<span class="nc" id="L95">            Recruiter recruiter = recruiterService.getRecruiterById(2L);</span>
+
+<span class="nc" id="L97">            JobOffer jobOffer = new JobOffer(title, description, department, jobTitle, status, publicationDate, validityDurationDays, recruiter);</span>
+
+<span class="nc" id="L99">            recruiterService.createJobOffer(jobOffer);</span>
+<span class="nc" id="L100">            response.sendRedirect(request.getContextPath() + &quot;/recruiter/dashboard&quot;);</span>
+
+<span class="nc" id="L102">        } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L103">            logger.log(Level.SEVERE, &quot;Error parsing input data&quot;, ex);</span>
+<span class="nc" id="L104">        } catch (Exception ex) {</span>
+<span class="nc" id="L105">            logger.log(Level.SEVERE, &quot;Error creating employee&quot;, ex);</span>
+<span class="nc" id="L106">        }</span>
+<span class="nc" id="L107">    }</span>
+
+    private void showCreateJobOffre(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L110">        List&lt;Department&gt; departments = departmentRepository.findAll();</span>
+<span class="nc" id="L111">        List&lt;JobTitle&gt; jobTitles = jobTitleRepository.findAll();</span>
+<span class="nc" id="L112">        List&lt;String&gt; jobOfferStatuses = Arrays.stream(JobOfferStatus.values())</span>
+<span class="nc" id="L113">                .map(Enum::name)</span>
+<span class="nc" id="L114">                .collect(Collectors.toList());</span>
+<span class="nc" id="L115">        request.setAttribute(&quot;departments&quot;, departments);</span>
+<span class="nc" id="L116">        request.setAttribute(&quot;jobTitles&quot;, jobTitles);</span>
+<span class="nc" id="L117">        request.setAttribute(&quot;jobOfferStatuses&quot;, jobOfferStatuses);</span>
+
+<span class="nc" id="L119">        request.getRequestDispatcher(&quot;/recruits/createJobOffer.jsp&quot;).forward(request, response);</span>
+<span class="nc" id="L120">    }</span>
+
+    private void showDashboard(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+<span class="nc" id="L125">        List&lt;JobOffer&gt; jobOffers = recruiterService.getJobOffers(); // Assuming you'll add this to RecruiterService</span>
+<span class="nc" id="L126">        request.setAttribute(&quot;jobOffers&quot;, jobOffers);</span>
+
+<span class="nc" id="L128">        request.getRequestDispatcher(&quot;/recruits/recruiter-dashboard.jsp&quot;).forward(request, response);</span>
+<span class="nc" id="L129">    }</span>
+
+    private void showJobApplications(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L132">        Long jobOfferId = Long.parseLong(request.getParameter(&quot;jobOfferId&quot;));</span>
+<span class="nc" id="L133">        List&lt;Application&gt; applications = recruiterService.getJobOfferById(jobOfferId).getApplications();</span>
+<span class="nc" id="L134">        request.setAttribute(&quot;applications&quot;, applications);</span>
+<span class="nc" id="L135">        List&lt;String&gt; applicationStatuses = Arrays.stream(ApplicationStatus.values())</span>
+<span class="nc" id="L136">                .map(Enum::name)</span>
+<span class="nc" id="L137">                .collect(Collectors.toList());</span>
+<span class="nc" id="L138">        request.setAttribute(&quot;applicationStatuses&quot;, applicationStatuses);</span>
+<span class="nc" id="L139">        request.getRequestDispatcher(&quot;/recruiter/viewApplications.jsp&quot;).forward(request, response);</span>
+<span class="nc" id="L140">    }</span>
+
+    private void deleteJobOffer(HttpServletRequest request, HttpServletResponse response) {
+<span class="nc" id="L143">        Long jobOfferId = Long.parseLong(request.getParameter(&quot;id&quot;));</span>
+        try {
+<span class="nc" id="L145">            recruiterService.deleteJobOffer(jobOfferId);</span>
+<span class="nc" id="L146">            response.sendRedirect(&quot;dashboard&quot;);</span>
+<span class="nc" id="L147">        } catch (Exception ex) {</span>
+<span class="nc" id="L148">            logger.log(Level.SEVERE, &quot;Error deleting job offer&quot;, ex);</span>
+<span class="nc" id="L149">        }</span>
+<span class="nc" id="L150">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

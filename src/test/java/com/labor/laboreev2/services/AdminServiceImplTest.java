@@ -5,6 +5,7 @@ import com.labor.laboreev2.models.LeaveRequest;
 import com.labor.laboreev2.models.enums.LeaveRequestStatus;
 import com.labor.laboreev2.repositories.interfaces.EmployeeRepository;
 import com.labor.laboreev2.repositories.interfaces.LeaveRequestRepository;
+import com.labor.laboreev2.utils.LeaveRequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,9 @@ class AdminServiceImplTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
+
+    @Mock
+    private LeaveRequestUtil leaveRequestUtil;
 
     @InjectMocks
     private AdminServiceImpl adminService;
@@ -68,12 +72,46 @@ class AdminServiceImplTest {
     void testApproveLeaveRequest() {
         when(leaveRequestRepository.findById(anyLong())).thenReturn(Optional.of(leaveRequest));
         when(employeeRepository.findById(anyLong())).thenReturn(Optional.of(employee));
+        when(leaveRequestUtil.calculateUsedLeaveDays(any(Employee.class), anyInt(), any())).thenReturn(0);
         when(leaveRequestRepository.save(any(LeaveRequest.class))).thenReturn(leaveRequest);
 
         LeaveRequest result = adminService.approveLeaveRequest(1L);
 
         assertEquals(LeaveRequestStatus.APPROVED, result.getStatus());
         verify(leaveRequestRepository, times(1)).save(any(LeaveRequest.class));
+    }
+
+    @Test
+    void testApproveLeaveRequest_NotFound() {
+        when(leaveRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.approveLeaveRequest(1L));
+
+        assertEquals("Leave request not found", exception.getMessage());
+        verify(leaveRequestRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void testApproveLeaveRequest_EmployeeNotFound() {
+        when(leaveRequestRepository.findById(anyLong())).thenReturn(Optional.of(leaveRequest));
+        when(employeeRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.approveLeaveRequest(1L));
+
+        assertEquals("Employee not found", exception.getMessage());
+    }
+
+    @Test
+    void testApproveLeaveRequest_InsufficientLeaveBalance() {
+        when(leaveRequestRepository.findById(anyLong())).thenReturn(Optional.of(leaveRequest));
+        when(employeeRepository.findById(anyLong())).thenReturn(Optional.of(employee));
+        when(leaveRequestUtil.calculateUsedLeaveDays(any(Employee.class), anyInt(), any())).thenReturn(20); // Simulating used days
+        leaveRequest.setStartDate(LocalDate.now());
+        leaveRequest.setEndDate(LocalDate.now().plusDays(5));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.approveLeaveRequest(1L));
+
+        assertEquals("Cannot approve leave request. Insufficient leave balance for employee.", exception.getMessage());
     }
 
     @Test
@@ -88,6 +126,15 @@ class AdminServiceImplTest {
     }
 
     @Test
+    void testRejectLeaveRequest_NotFound() {
+        when(leaveRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.rejectLeaveRequest(1L));
+
+        assertEquals("Leave request not found", exception.getMessage());
+    }
+
+    @Test
     void testCreateEmployee() {
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
@@ -96,6 +143,15 @@ class AdminServiceImplTest {
         assertNotNull(result);
         assertEquals(employee.getId(), result.getId());
         verify(employeeRepository, times(1)).save(any(Employee.class));
+    }
+
+    @Test
+    void testCreateEmployee_Failure() {
+        when(employeeRepository.save(any(Employee.class))).thenThrow(new RuntimeException("Database error"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.createEmployee(employee));
+
+        assertEquals("Failed to create employee", exception.getMessage());
     }
 
     @Test
@@ -110,12 +166,30 @@ class AdminServiceImplTest {
     }
 
     @Test
+    void testUpdateEmployee_Failure() {
+        when(employeeRepository.save(any(Employee.class))).thenThrow(new RuntimeException("Database error"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.updateEmployee(employee));
+
+        assertEquals("Failed to update employee", exception.getMessage());
+    }
+
+    @Test
     void testDeleteEmployee() {
         doNothing().when(employeeRepository).deleteById(anyLong());
 
         adminService.deleteEmployee(1L);
 
         verify(employeeRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteEmployee_Failure() {
+        doThrow(new RuntimeException("Database error")).when(employeeRepository).deleteById(anyLong());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.deleteEmployee(1L));
+
+        assertEquals("Failed to delete employee", exception.getMessage());
     }
 
     @Test
@@ -127,5 +201,14 @@ class AdminServiceImplTest {
         assertNotNull(result);
         assertEquals(employee.getId(), result.getId());
         verify(employeeRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGetEmployeeById_NotFound() {
+        when(employeeRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> adminService.getEmployeeById(1L));
+
+        assertEquals("Employee not found", exception.getMessage());
     }
 }

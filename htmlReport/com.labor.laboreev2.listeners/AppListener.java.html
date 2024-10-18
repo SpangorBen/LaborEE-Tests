@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.listeners</a> &gt; <span class="el_source">AppListener.java</span></div><h1>AppListener.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.listeners;
+
+import com.labor.laboreev2.repositories.*;
+import com.labor.laboreev2.repositories.interfaces.*;
+import com.labor.laboreev2.security.CustomJDBCRealm;
+import com.labor.laboreev2.services.AdminServiceImpl;
+import com.labor.laboreev2.services.EmployeeServiceImpl;
+import com.labor.laboreev2.services.RecruiterServiceImpl;
+import com.labor.laboreev2.services.interfaces.AdminService;
+import com.labor.laboreev2.services.interfaces.EmployeeService;
+import com.labor.laboreev2.services.interfaces.RecruiterService;
+import com.labor.laboreev2.utils.JPAUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
+
+@WebListener
+<span class="nc" id="L20">public class AppListener implements ServletContextListener {</span>
+
+    private ServletContextEvent sce;
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+<span class="nc" id="L26">        this.sce = sce;</span>
+<span class="nc" id="L27">        EntityManagerFactory emf = JPAUtil.getEntityManagerFactory();</span>
+<span class="nc" id="L28">        EntityManager em = emf.createEntityManager();</span>
+
+<span class="nc" id="L30">        ApplicationRepository applicationRepository = new ApplicationRepositoryImpl(em);</span>
+<span class="nc" id="L31">        DepartmentRepository departmentRepository = new DepartmentRepositoryImpl(em);</span>
+<span class="nc" id="L32">        EmployeeRepository employeeRepository = new EmployeeRepositoryImpl(em);</span>
+<span class="nc" id="L33">        JobOfferRepository jobOfferRepository = new JobOfferRepositoryImpl(em);</span>
+<span class="nc" id="L34">        JobTitleRepository jobTitleRepository = new JobTitleRepositoryImpl(em);</span>
+<span class="nc" id="L35">        LeaveRequestRepository leaveRequestRepository = new LeaveRequestRepositoryImpl(em);</span>
+<span class="nc" id="L36">        PayRollRepository payRollRepository = new PayRollRepositoryImpl(em);</span>
+<span class="nc" id="L37">        RecruiterRepository recruiterRepository = new RecruiterRepositoryImpl(em);</span>
+<span class="nc" id="L38">        UserRepository userRepository = new UserRepositoryImpl(em);</span>
+
+<span class="nc" id="L40">        CustomJDBCRealm.setUserRepository(userRepository);</span>
+
+<span class="nc" id="L42">        AdminService adminService = new AdminServiceImpl(leaveRequestRepository, employeeRepository);</span>
+<span class="nc" id="L43">        EmployeeService employeeService = new EmployeeServiceImpl(leaveRequestRepository, employeeRepository);</span>
+<span class="nc" id="L44">        RecruiterService recruiterService = new RecruiterServiceImpl(jobOfferRepository, applicationRepository, recruiterRepository);</span>
+
+<span class="nc" id="L46">        sce.getServletContext().setAttribute(&quot;applicationRepository&quot;, applicationRepository);</span>
+<span class="nc" id="L47">        sce.getServletContext().setAttribute(&quot;departmentRepository&quot;, departmentRepository);</span>
+<span class="nc" id="L48">        sce.getServletContext().setAttribute(&quot;employeeRepository&quot;, employeeRepository);</span>
+<span class="nc" id="L49">        sce.getServletContext().setAttribute(&quot;jobOfferRepository&quot;, jobOfferRepository);</span>
+<span class="nc" id="L50">        sce.getServletContext().setAttribute(&quot;jobTitleRepository&quot;, jobTitleRepository);</span>
+<span class="nc" id="L51">        sce.getServletContext().setAttribute(&quot;leaveRequestRepository&quot;, leaveRequestRepository);</span>
+<span class="nc" id="L52">        sce.getServletContext().setAttribute(&quot;payRollRepository&quot;, payRollRepository);</span>
+<span class="nc" id="L53">        sce.getServletContext().setAttribute(&quot;recruiterRepository&quot;, recruiterRepository);</span>
+<span class="nc" id="L54">        sce.getServletContext().setAttribute(&quot;userRepository&quot;, userRepository);</span>
+
+<span class="nc" id="L56">        sce.getServletContext().setAttribute(&quot;adminService&quot;, adminService);</span>
+<span class="nc" id="L57">        sce.getServletContext().setAttribute(&quot;employeeService&quot;, employeeService);</span>
+<span class="nc" id="L58">        sce.getServletContext().setAttribute(&quot;recruiterService&quot;, recruiterService);</span>
+
+
+<span class="nc" id="L61">    }</span>
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+<span class="nc" id="L65">        JPAUtil.closeEntityManagerFactory();</span>
+<span class="nc" id="L66">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

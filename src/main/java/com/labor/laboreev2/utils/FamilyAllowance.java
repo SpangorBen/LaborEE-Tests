@@ -4,7 +4,7 @@ import com.labor.laboreev2.models.User;
 
 public class FamilyAllowance {
 
-    public static double calculateFamilyAllowance(User user) {
+    public double calculateFamilyAllowance(User user) {
         int nbrOfChildren = user.getNumOfChildren();
         double salary = user.getSalary();
 

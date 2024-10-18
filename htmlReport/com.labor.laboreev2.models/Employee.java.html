@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Employee.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.models</a> &gt; <span class="el_source">Employee.java</span></div><h1>Employee.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.models;
+
+
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = &quot;Employees&quot;)
+@DiscriminatorValue(&quot;EMPLOYEE&quot;)
+public class Employee extends User{
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;departmentId&quot;, nullable = false)
+    private Department department;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;jobTitleId&quot;, nullable = false)
+    private JobTitle jobTitle;
+
+<span class="fc" id="L21">    public Employee() {</span>
+<span class="fc" id="L22">    }</span>
+
+    public Employee(String name, LocalDate birthDate, String socialSecurityNumber, String email, String password, String salt, String phone, LocalDate hireDate, Integer numOfChildren, Double salary, Address address, Department department, JobTitle jobTitle) {
+<span class="nc" id="L25">        super(name, birthDate, socialSecurityNumber, email, password, salt, phone, hireDate, numOfChildren, salary, address);</span>
+<span class="nc" id="L26">        this.department = department;</span>
+<span class="nc" id="L27">        this.jobTitle = jobTitle;</span>
+<span class="nc" id="L28">    }</span>
+
+    public Department getDepartment() {
+<span class="nc" id="L31">        return department;</span>
+    }
+
+    public void setDepartment(Department department) {
+<span class="nc" id="L35">        this.department = department;</span>
+<span class="nc" id="L36">    }</span>
+
+    public JobTitle getJobTitle() {
+<span class="nc" id="L39">        return jobTitle;</span>
+    }
+
+    public void setJobTitle(JobTitle jobTitle) {
+<span class="nc" id="L43">        this.jobTitle = jobTitle;</span>
+<span class="nc" id="L44">    }</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L48">        return</span>
+<span class="fc" id="L49">                super.toString() +</span>
+                &quot;Employee{&quot; +
+                &quot;department=&quot; + department +
+                &quot;, jobTitle=&quot; + jobTitle +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

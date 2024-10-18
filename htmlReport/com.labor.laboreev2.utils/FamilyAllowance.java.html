@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FamilyAllowance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.utils</a> &gt; <span class="el_source">FamilyAllowance.java</span></div><h1>FamilyAllowance.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.utils;
+
+import com.labor.laboreev2.models.User;
+
+<span class="nc" id="L5">public class FamilyAllowance {</span>
+
+    public double calculateFamilyAllowance(User user) {
+<span class="nc" id="L8">        int nbrOfChildren = user.getNumOfChildren();</span>
+<span class="nc" id="L9">        double salary = user.getSalary();</span>
+
+<span class="nc bnc" id="L11" title="All 2 branches missed.">        if (nbrOfChildren == 0)</span>
+        {
+<span class="nc" id="L13">            return 0;</span>
+        }
+
+<span class="nc" id="L16">        int maxChildren = Math.min(nbrOfChildren, 6);</span>
+<span class="nc" id="L17">        double allowance = 0;</span>
+
+<span class="nc bnc" id="L19" title="All 2 branches missed.">        if (salary &lt;= 6000) {</span>
+<span class="nc" id="L20">            allowance += Math.min(maxChildren, 3) * 300;</span>
+<span class="nc" id="L21">            allowance += Math.max(maxChildren - 3, 0) * 150;</span>
+        } else {
+<span class="nc" id="L23">            allowance += Math.min(maxChildren, 3) * 200;</span>
+<span class="nc" id="L24">            allowance += Math.max(maxChildren - 3, 0) * 110;</span>
+        }
+
+<span class="nc" id="L27">        return allowance;</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -26,6 +26,5 @@ public interface RecruiterService {
     List<Application> filterApplicationsByStatus(ApplicationStatus status);
     List<Application> filterApplicationsBySkill(String skill);
 
-    Map<LocalDate, BigDecimal> getMonthlyFamilyAllowanceTotals();
 
 }

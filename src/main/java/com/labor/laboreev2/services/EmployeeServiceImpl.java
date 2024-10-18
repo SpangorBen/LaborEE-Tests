@@ -19,10 +19,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final Logger logger = Logger.getLogger(EmployeeServiceImpl.class.getName());
     private final LeaveRequestRepository leaveRequestRepository;
     private final EmployeeRepository employeeRepository;
+    private final LeaveRequestUtil leaveRequestUtil;
+    private final FamilyAllowance familyAllowance;
 
-    public EmployeeServiceImpl(LeaveRequestRepository leaveRequestRepository, EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(LeaveRequestRepository leaveRequestRepository, EmployeeRepository employeeRepository, LeaveRequestUtil leaveRequestUtil, FamilyAllowance familyAllowance) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.employeeRepository = employeeRepository;
+        this.leaveRequestUtil = leaveRequestUtil;
+        this.familyAllowance = familyAllowance;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         int totalDays = 21;
-        int usedLeaveDays = LeaveRequestUtil.calculateUsedLeaveDays(employee, leaveRequest.getStartDate().getYear(), leaveRequestRepository);
+        int usedLeaveDays = leaveRequestUtil.calculateUsedLeaveDays(employee, leaveRequest.getStartDate().getYear(), leaveRequestRepository);
         int requestedLeaveDays = leaveRequest.calculateDuration();
         logger.info("Requested leave days: " + requestedLeaveDays);
         logger.info("Used leave days: " + usedLeaveDays);
@@ -67,7 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employee.isEmpty()) {
             throw new RuntimeException("Employee not found");
         }
-        return FamilyAllowance.calculateFamilyAllowance(employee.get());
+        return familyAllowance.calculateFamilyAllowance(employee.get());
 
     }
 

@@ -21,10 +21,12 @@ public class AdminServiceImpl implements AdminService {
     private final Logger logger = Logger.getLogger(AdminServiceImpl.class.getName());
     private final LeaveRequestRepository leaveRequestRepository;
     private final EmployeeRepository employeeRepository;
+    private final LeaveRequestUtil leaveRequestUtil;
 
-    public AdminServiceImpl(LeaveRequestRepository leaveRequestRepository, EmployeeRepository employeeRepository) {
+    public AdminServiceImpl(LeaveRequestRepository leaveRequestRepository, EmployeeRepository employeeRepository, LeaveRequestUtil leaveRequestUtil) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.employeeRepository = employeeRepository;
+        this.leaveRequestUtil = leaveRequestUtil;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class AdminServiceImpl implements AdminService {
             Employee employee = employeeRepository.findById(leaveRequest.getUser().getId())
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
             int totalLeaveDays = 21;
-            int usedLeaveDays = LeaveRequestUtil.calculateUsedLeaveDays(employee, leaveRequest.getStartDate().getYear(), leaveRequestRepository);
+            int usedLeaveDays = leaveRequestUtil.calculateUsedLeaveDays(employee, leaveRequest.getStartDate().getYear(), leaveRequestRepository);
             int requestedDays = leaveRequest.calculateDuration();
 
             if (requestedDays > (totalLeaveDays - usedLeaveDays)) {
@@ -122,31 +124,4 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    @Override
-    public List<Employee> getAllEmployees() {
-        try {
-            return employeeRepository.findAll();
-        } catch (Exception e) {
-            logger.severe("Error getting all employees: " + e.getMessage());
-            throw new RuntimeException("Error getting all employees", e);
-        }
-    }
-
-//    @Override
-//    public Map<LocalDate, BigDecimal> getMonthlyFamilyAllowanceTotals() {
-//        return null;
-//    }
-
-    @Override
-    public Map<LeaveRequestStatus, Long> getMonthlyLeaveRequestCounts(LocalDate month) {
-        try {
-            List<LeaveRequest> requestsForMonth = leaveRequestRepository.findByMonth(month);
-
-            return requestsForMonth.stream()
-                    .collect(Collectors.groupingBy(LeaveRequest::getStatus, Collectors.counting()));
-        } catch (Exception e) {
-            logger.severe("Error getting monthly leave request counts: " + e.getMessage());
-            throw new RuntimeException("Error getting monthly leave request counts", e);
-        }
-    }
 }

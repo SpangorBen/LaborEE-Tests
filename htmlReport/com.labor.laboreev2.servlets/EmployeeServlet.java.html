@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.servlets</a> &gt; <span class="el_source">EmployeeServlet.java</span></div><h1>EmployeeServlet.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.servlets;
+
+import com.labor.laboreev2.models.Employee;
+import com.labor.laboreev2.models.LeaveRequest;
+import com.labor.laboreev2.models.enums.LeaveRequestStatus;
+import com.labor.laboreev2.services.interfaces.EmployeeService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+@WebServlet(&quot;/employee/*&quot;)
+<span class="nc" id="L25">public class EmployeeServlet extends HttpServlet {</span>
+
+<span class="nc" id="L27">    private final Logger logger = Logger.getLogger(EmployeeServlet.class.getName());</span>
+
+    private EmployeeService employeeService;
+
+    @Override
+    public void init() throws ServletException {
+<span class="nc" id="L33">        super.init();</span>
+
+<span class="nc" id="L35">        employeeService = (EmployeeService) getServletContext().getAttribute(&quot;employeeService&quot;);</span>
+<span class="nc" id="L36">    }</span>
+
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L40">        String action = request.getPathInfo();</span>
+<span class="nc bnc" id="L41" title="All 4 branches missed.">        if (action == null || action.equals(&quot;/&quot;)) {</span>
+<span class="nc" id="L42">            action = &quot;/dashboard&quot;;</span>
+        }
+
+<span class="nc bnc" id="L45" title="All 3 branches missed.">        switch (action) {</span>
+            case &quot;/dashboard&quot;:
+<span class="nc" id="L47">                showDashboard(request, response);</span>
+<span class="nc" id="L48">                break;</span>
+            case &quot;/calculateFamilyAllowance&quot;:
+//                calculateFamilyAllowance(request, response);
+<span class="nc" id="L51">                break;</span>
+            default:
+<span class="nc" id="L53">                showDashboard(request, response);</span>
+                break;
+        }
+<span class="nc" id="L56">    }</span>
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+<span class="nc" id="L61">        String action = request.getParameter(&quot;action&quot;);</span>
+
+<span class="nc bnc" id="L63" title="All 4 branches missed.">        if (action != null &amp;&amp; action.equals(&quot;submitLeave&quot;)) {</span>
+<span class="nc" id="L64">            submitLeaveRequest(request, response);</span>
+        }
+<span class="nc" id="L66">    }</span>
+
+
+    private void submitLeaveRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+<span class="nc" id="L71">            LocalDate startDate = LocalDate.parse(request.getParameter(&quot;startDate&quot;));</span>
+<span class="nc" id="L72">            LocalDate endDate = LocalDate.parse(request.getParameter(&quot;endDate&quot;));</span>
+<span class="nc" id="L73">            String reason = request.getParameter(&quot;reason&quot;);</span>
+<span class="nc" id="L74">            LeaveRequestStatus status = LeaveRequestStatus.PENDING;</span>
+
+<span class="nc" id="L76">            Long employeeId = 3L;</span>
+
+<span class="nc" id="L78">            Employee employee = employeeService.getById(employeeId)</span>
+<span class="nc" id="L79">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Employee not found&quot;));</span>
+
+<span class="nc" id="L81">            LeaveRequest leaveRequest = new LeaveRequest(employee, startDate, endDate, reason, status);</span>
+
+<span class="nc" id="L83">            employeeService.submitLeaveRequest(leaveRequest);</span>
+
+<span class="nc" id="L85">            response.sendRedirect(request.getContextPath() + &quot;/employee/employee-dashboard&quot;);</span>
+
+<span class="nc" id="L87">        } catch (Exception ex) {</span>
+<span class="nc" id="L88">            logger.log(Level.SEVERE, &quot;Error submitting leave request&quot;, ex);</span>
+<span class="nc" id="L89">            request.setAttribute(&quot;errorMessage&quot;, &quot;An error occurred. Please try again later.&quot;);</span>
+<span class="nc" id="L90">            showDashboard(request, response);</span>
+<span class="nc" id="L91">        }</span>
+<span class="nc" id="L92">    }</span>
+
+    private void showDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L95">        Long employeeId = 3L;</span>
+
+<span class="nc" id="L97">        Employee employee = employeeService.getById(employeeId)</span>
+<span class="nc" id="L98">                .orElseThrow(() -&gt; new RuntimeException(&quot;Employee not found&quot;));</span>
+<span class="nc" id="L99">        List&lt;LeaveRequest&gt; leaveRequests = employeeService.getEmployeeLeaveRequests(employeeId);</span>
+<span class="nc" id="L100">        double familyAllowance = employeeService.calculateFamilyAllowance(employeeId);</span>
+
+<span class="nc" id="L102">        request.setAttribute(&quot;employee&quot;, employee);</span>
+<span class="nc" id="L103">        request.setAttribute(&quot;leaveRequests&quot;, leaveRequests);</span>
+<span class="nc" id="L104">        request.setAttribute(&quot;familyAllowance&quot;, familyAllowance);</span>
+
+<span class="nc" id="L106">        request.getRequestDispatcher(&quot;/employees/employee-dashboard.jsp&quot;).forward(request, response);</span>
+<span class="nc" id="L107">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

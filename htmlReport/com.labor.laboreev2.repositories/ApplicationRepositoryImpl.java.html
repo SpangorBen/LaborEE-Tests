@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApplicationRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.repositories</a> &gt; <span class="el_source">ApplicationRepositoryImpl.java</span></div><h1>ApplicationRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.repositories;
+
+import com.labor.laboreev2.models.Application;
+import com.labor.laboreev2.models.enums.ApplicationStatus;
+import com.labor.laboreev2.repositories.interfaces.ApplicationRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.transaction.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
+
+public class ApplicationRepositoryImpl implements ApplicationRepository {
+
+<span class="nc" id="L16">    private final Logger logger = Logger.getLogger(ApplicationRepositoryImpl.class.getName());</span>
+    private final EntityManager em;
+
+<span class="nc" id="L19">    public ApplicationRepositoryImpl(EntityManager em) {</span>
+<span class="nc" id="L20">        this.em = em;</span>
+<span class="nc" id="L21">    }</span>
+
+    @Override
+    @Transactional
+    public Application save(Application application) {
+<span class="nc" id="L26">        EntityTransaction transaction = em.getTransaction();</span>
+        try {
+<span class="nc" id="L28">            transaction.begin();</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">            if (application.getApplicationId() == null) {</span>
+<span class="nc" id="L30">                em.persist(application);</span>
+            } else {
+<span class="nc" id="L32">                em.merge(application);</span>
+            }
+<span class="nc" id="L34">            transaction.commit();</span>
+<span class="nc" id="L35">            return application;</span>
+<span class="nc" id="L36">        } catch (Exception e) {</span>
+<span class="nc" id="L37">            logger.severe(&quot;Error saving application: &quot; + e.getMessage());</span>
+<span class="nc" id="L38">            throw new RuntimeException(&quot;Error saving application&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public Optional&lt;Application&gt; findById(Long id) {
+        try {
+<span class="nc" id="L45">            Application application = em.find(Application.class, id);</span>
+<span class="nc" id="L46">            return Optional.ofNullable(application);</span>
+<span class="nc" id="L47">        } catch (Exception e) {</span>
+<span class="nc" id="L48">            logger.severe(&quot;Error finding application by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L49">            throw new RuntimeException(&quot;Error finding application by id&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Application&gt; findAll() {
+        try {
+<span class="nc" id="L56">            return em.createQuery(&quot;SELECT a FROM Application a&quot;, Application.class).getResultList();</span>
+<span class="nc" id="L57">        } catch (Exception e) {</span>
+<span class="nc" id="L58">            logger.severe(&quot;Error finding all applications: &quot; + e.getMessage());</span>
+<span class="nc" id="L59">            throw new RuntimeException(&quot;Error finding all applications&quot;, e);</span>
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+<span class="nc" id="L66">        EntityTransaction transaction = em.getTransaction();</span>
+        try {
+<span class="nc" id="L68">            transaction.begin();</span>
+<span class="nc" id="L69">            Optional&lt;Application&gt; application = findById(id);</span>
+<span class="nc" id="L70">            application.ifPresent(a -&gt; em.remove(a));</span>
+<span class="nc" id="L71">            transaction.commit();</span>
+<span class="nc" id="L72">        } catch (Exception e) {</span>
+<span class="nc" id="L73">            logger.severe(&quot;Error deleting application by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L74">            throw new RuntimeException(&quot;Error deleting application by id&quot;, e);</span>
+<span class="nc" id="L75">        }</span>
+<span class="nc" id="L76">    }</span>
+
+    @Override
+    public List&lt;Application&gt; findByStatus(ApplicationStatus status) {
+        try {
+<span class="nc" id="L81">            return em.createQuery(&quot;SELECT a FROM Application a WHERE a.status = :status&quot;, Application.class)</span>
+<span class="nc" id="L82">                    .setParameter(&quot;status&quot;, status)</span>
+<span class="nc" id="L83">                    .getResultList();</span>
+<span class="nc" id="L84">        } catch (Exception e) {</span>
+<span class="nc" id="L85">            logger.severe(&quot;Error finding applications by status: &quot; + e.getMessage());</span>
+<span class="nc" id="L86">            throw new RuntimeException(&quot;Error finding applications by status&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Application&gt; findBySkill(String skill) {
+        try {
+<span class="nc" id="L93">            return em.createQuery(&quot;SELECT a FROM Application a WHERE a.skills = :skill&quot;, Application.class)</span>
+<span class="nc" id="L94">                    .setParameter(&quot;skill&quot;, &quot;%&quot; + skill + &quot;%&quot;)</span>
+<span class="nc" id="L95">                    .getResultList();</span>
+<span class="nc" id="L96">        } catch (Exception e) {</span>
+<span class="nc" id="L97">            logger.severe(&quot;Error finding applications by skill: &quot; + e.getMessage());</span>
+<span class="nc" id="L98">            throw new RuntimeException(&quot;Error finding applications by skill&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Application&gt; findByJobOffer(Long jobOfferId) {
+        try {
+<span class="nc" id="L105">            return em.createQuery(&quot;SELECT a FROM Application a WHERE a.jobOffer.jobOfferId = :jobOfferId&quot;, Application.class)</span>
+<span class="nc" id="L106">                    .setParameter(&quot;jobOfferId&quot;, jobOfferId)</span>
+<span class="nc" id="L107">                    .getResultList();</span>
+<span class="nc" id="L108">        } catch (Exception e) {</span>
+<span class="nc" id="L109">            logger.severe(&quot;Error finding applications by job offer: &quot; + e.getMessage());</span>
+<span class="nc" id="L110">            throw new RuntimeException(&quot;Error finding applications by job offer&quot;, e);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

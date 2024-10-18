@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DepartmentRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java in LaborEE-V2 Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.labor.laboreev2.repositories</a> &gt; <span class="el_source">DepartmentRepositoryImpl.java</span></div><h1>DepartmentRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.labor.laboreev2.repositories;
+
+import com.labor.laboreev2.models.Department;
+import com.labor.laboreev2.repositories.interfaces.DepartmentRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.transaction.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
+
+public class DepartmentRepositoryImpl implements DepartmentRepository {
+
+<span class="nc" id="L15">    private final Logger logger = Logger.getLogger(DepartmentRepositoryImpl.class.getName());</span>
+    private EntityManager em;
+
+<span class="nc" id="L18">    public DepartmentRepositoryImpl(EntityManager em) {</span>
+<span class="nc" id="L19">        this.em = em;</span>
+<span class="nc" id="L20">    }</span>
+
+    @Override
+    @Transactional
+    public Department save(Department department) {
+<span class="nc" id="L25">        EntityTransaction transaction = em.getTransaction();</span>
+        try {
+<span class="nc" id="L27">            transaction.begin();</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">            if (department.getId() == null) {</span>
+<span class="nc" id="L29">                 em.persist(department);</span>
+            } else {
+<span class="nc" id="L31">                 em.merge(department);</span>
+            }
+<span class="nc" id="L33">            transaction.commit();</span>
+<span class="nc" id="L34">            return department;</span>
+<span class="nc" id="L35">        } catch (Exception e) {</span>
+<span class="nc" id="L36">            logger.severe(&quot;Failed to save department: &quot; + e.getMessage());</span>
+<span class="nc" id="L37">            throw new RuntimeException(&quot;Failed to save department&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public Optional&lt;Department&gt; findById(Long id) {
+        try {
+<span class="nc" id="L44">            Department department = em.find(Department.class, id);</span>
+<span class="nc" id="L45">            return Optional.ofNullable(department);</span>
+<span class="nc" id="L46">        } catch (Exception e) {</span>
+<span class="nc" id="L47">            logger.severe(&quot;Failed to find department by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L48">            throw new RuntimeException(&quot;Failed to find department by id&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public List&lt;Department&gt; findAll() {
+        try {
+<span class="nc" id="L55">            return em.createQuery(&quot;SELECT d FROM Department d&quot;, Department.class).getResultList();</span>
+<span class="nc" id="L56">        } catch (Exception e) {</span>
+<span class="nc" id="L57">            logger.severe(&quot;Failed to find all departments: &quot; + e.getMessage());</span>
+<span class="nc" id="L58">            throw new RuntimeException(&quot;Failed to find all departments&quot;, e);</span>
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+<span class="nc" id="L65">        EntityTransaction transaction = em.getTransaction();</span>
+        try {
+<span class="nc" id="L67">            transaction.begin();</span>
+<span class="nc" id="L68">            Optional&lt;Department&gt; department = findById(id);</span>
+<span class="nc" id="L69">            department.ifPresent(value -&gt; em.remove(value));</span>
+<span class="nc" id="L70">            transaction.commit();</span>
+<span class="nc" id="L71">        } catch (Exception e) {</span>
+<span class="nc" id="L72">            logger.severe(&quot;Failed to delete department by id: &quot; + e.getMessage());</span>
+<span class="nc" id="L73">            throw new RuntimeException(&quot;Failed to delete department by id&quot;, e);</span>
+<span class="nc" id="L74">        }</span>
+<span class="nc" id="L75">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
