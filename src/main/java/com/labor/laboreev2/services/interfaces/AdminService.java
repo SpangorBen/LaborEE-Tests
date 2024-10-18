@@ -20,6 +20,6 @@ public interface AdminService {
     Employee getEmployeeById(Long employeeId);
     List<Employee> getAllEmployees();
 
-    Map<LocalDate, BigDecimal> getMonthlyFamilyAllowanceTotals();
+//    Map<LocalDate, BigDecimal> getMonthlyFamilyAllowanceTotals();
     Map<LeaveRequestStatus, Long> getMonthlyLeaveRequestCounts(LocalDate month);
 }
